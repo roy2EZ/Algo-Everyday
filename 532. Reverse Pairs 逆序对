@@ -56,27 +56,19 @@ public class Solution {
         
         while (left <= mid && right <= end) { //两边都还有数
             if (A[left] <= A[right]) { //如果左边的头比右边的头小，不会产生逆序对，把左边头放进temp
-                temp[index] = A[left];
-                index++;
-                left++;
+                temp[index++] = A[left++];
             } else { //会产生逆序对
-                temp[index] = A[right];
                 reversePairSum += mid - left + 1; // 左边从指针(left)到左边结尾(mid)全部都可以跟右边头产生逆序对
-                index++;
-                right++;
+                temp[index++] = A[right++];
             }
         }
         
         // 如果只剩一遍有，另一边没有，就不会再产生逆序对了，把剩的都放进temp
         while (left <= mid) {
-            temp[index] = A[left];
-            index++;
-            left++;
+            temp[index++] = A[left++];
         }
         while (right <= end) {
-            temp[index] = A[right];
-            index++;
-            right++;
+            temp[index++] = A[right++];
         }
         
         //最后把排完序的有序数组复制回A中
