@@ -34,25 +34,30 @@ public class Solution {
      */
     public int kthLargestElement(int k, int[] nums) {
         // write your code here
-        return partition(nums, 0, nums.length - 1, nums.length - k);
+        return partition (nums, 0, nums.length - 1, nums.length - k);
     }
     
     private int partition(int[] nums, int start, int end, int k) {
+        // basecase
         if (start == end) {
-            return nums[start]; // basecase
+            return nums[start];
         }
         
-        int mid = start + (end - start) / 2;
-        int pivot = nums[mid];
-        
-        int left = start, right = end; 
+        int pivot = nums[(start + end)/2];
+        int left = start, right = end;
+        // 左右两个指针向中间走
         while (left <= right) {
             while (left <= right && nums[left] < pivot) {
-                left++; 
+                left++;
             }
             while (left <= right && nums[right] > pivot) {
                 right--;
-            }
+            } 
+            
+            // 经过上面两个while loop，
+            // left停在了一个>= pivot的数，
+            // right停在一个 <= pivot的数，
+            // 交换这两个数然后继续总的while loop
             if (left <= right) {
                 swap(nums, left, right);
                 left++;
@@ -60,15 +65,17 @@ public class Solution {
             }
         }
         
-        if (right >= k) {
+        // 排序完毕，现在right指针在left的左边
+        if (k <= right) {
             return partition(nums, start, right, k);
         }
-        if (left <= k) {
+        
+        if (k >= left) {
             return partition(nums, left, end, k);
         }
         
+        // 可能上面两个都不符合，正好right和left之间有一个，那个就是第k个
         return nums[k];
-        
     }
     
     private void swap(int[] nums, int i, int j) {
