@@ -38,8 +38,8 @@ public class Solution {
     }
     
     private int partition(int[] nums, int start, int end, int k) {
-        if (start >= end) {
-            return nums[k]; // basecase
+        if (start == end) {
+            return nums[start]; // basecase
         }
         
         int mid = start + (end - start) / 2;
