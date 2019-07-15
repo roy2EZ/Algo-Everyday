@@ -33,3 +33,52 @@ That will cost O(k) extra memory. Can you do it without using extra memory?
 
 
 解法（优化的快速排序， Running Time O(n*log(k)）
+
+public class Solution {
+    /**
+     * @param colors: A list of integer
+     * @param k: An integer
+     * @return: nothing
+     */
+    public void sortColors2(int[] colors, int k) {
+        // write your code here
+        colorQuickSort(colors, 0, colors.length - 1, 1, k);
+    }
+    
+    private void colorQuickSort(int[] colors, int start, int end, int colorFrom, int colorTo) {
+        if (colorFrom == colorTo) {
+            return;
+        }
+        if (start >= end) {
+            return;
+        }
+        
+        int colorPivot = (colorFrom + colorTo) / 2;
+        int left = start, right = end;
+        while (left <= right) {
+            while (left <= right && colors[left] <= colorPivot) {
+                left++;
+            }
+            while (left <= right && colors[right] > colorPivot) {
+                right--;
+            }
+            
+            // 经过上面两个while loop, left停在一个 > colorPivot 的颜色
+            // right停在一个 <= colorPivot的颜色， 交换二者然后继续
+            if (left <= right) {
+                swap(colors, left, right);
+                left++;
+                right--;
+            }
+        }
+        
+        colorQuickSort(colors, start, right, colorFrom, colorPivot);
+        colorQuickSort(colors, left, end, colorPivot + 1, colorTo);
+    }
+    
+    private void swap(int[] colors, int i, int j) {
+        int temp = colors[i];
+        colors[i] = colors[j] ;
+        colors[j] = temp;
+    }
+}
