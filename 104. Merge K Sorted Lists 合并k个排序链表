@@ -11,3 +11,64 @@ Example 1:
 Example 2:
 	Input: [2->6->null,5->null,7->null]
 	Output:  2->5->6->7->null
+	
+解题思路：
+用最大堆MaxHeap(java中使用PriorityQueue实现)。MaxHeap可以一直得到该heap中的最大元素。
+把K个链表的头放进MaxHeap，然后max拿出来，拿出来的这个node的next加进MaxHeap, 直到heap空了所有的node都过了一遍。
+注意，这个heap里放的元素都是ListNode，java中比较他们的大小要重写比较器Comparator
+
+时间复杂度：MaxHeap取max是O（1）,add元素是O（logk），进行n次，总的就是O（nlogk）
+
+/**
+ * Definition for ListNode.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int val) {
+ *         this.val = val;
+ *         this.next = null;
+ *     }
+ * }
+ */ 
+public class Solution {
+    /**
+     * @param lists: a list of ListNode
+     * @return: The head of one sorted list.
+     */
+    public ListNode mergeKLists(List<ListNode> lists) {  
+        // write your code here
+        
+        // corner case
+        if (lists == null || lists.size() == 0) {
+            return null;
+        }
+        
+        // 用PriorityQueue实现一个MaxHeap，注意加入重写的Comparator
+        Queue<ListNode> heap = new PriorityQueue<ListNode>(lists.size(),ListNodeComparator);
+        
+        // 把lists里每个元素（k个链表的头）都放进maxheap
+        for(int i = 0; i < lists.size(); i++) {
+            if (lists.get(i) != null) {
+                heap.add(lists.get(i));
+            }
+        }
+        
+        ListNode dummy = new ListNode(0);
+        ListNode tail = dummy;
+        while (!heap.isEmpty()) {
+            ListNode max = heap.poll();
+            tail.next = max;
+            tail = max;
+            if (max.next != null) {
+                heap.add(max.next);
+            }
+        }
+        return dummy.next;
+    }
+    // 重写比较器，注意结尾的分号别忘了
+    private Comparator<ListNode> ListNodeComparator = new Comparator<ListNode>() {
+        public int compare(ListNode node1, ListNode node2) {
+            return node1.val - node2.val;
+        }
+    };
+}
