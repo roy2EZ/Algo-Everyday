@@ -39,7 +39,7 @@ Solve it by merge sort & quick sort separately.
  *     }
  * }
  */
-
+// 解法1： 
 public class Solution {
     /**
      * @param head: The head of linked list.
