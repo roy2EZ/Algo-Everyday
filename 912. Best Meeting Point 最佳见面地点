@@ -1,0 +1,64 @@
+912. Best Meeting Point 最佳见面地点
+中文English
+有一群住在不同地方的朋友（两个或以上）想要在某地见面，要求他们去往目的地的路程和最短。
+现在给一个0、1组成的二维数组，1表示此地有一个人居住。使用曼哈顿距离作为计算总距离，公式为：(p1, p2) = |p2.x - p1.x| + |p2.y - p1.y|
+A group of two or more people wants to meet and minimize the total travel distance. 
+You are given a 2D grid of values 0 or 1, where each 1 marks the home of someone in the group. 
+The distance is calculated using Manhattan Distance, where distance(p1, p2) = |p2.x - p1.x| + |p2.y - p1.y|.
+
+样例
+Example 1:
+
+Input:
+[[1,0,0,0,1],[0,0,0,0,0],[0,0,1,0,0]]
+Output:
+6
+
+Explanation:
+The point `(0,2)` is an ideal meeting point, as the total travel distance of `2 + 2 + 2 = 6` is minimal. So return `6`.
+Example 2:
+
+Input:
+[[1,1,0,0,1],[1,0,1,0,0],[0,0,1,0,1]]
+Output:
+14
+
+解题思路：
+曼哈顿距离有个特点：水平距离与垂直距离独立，因此分别计算水平的最佳点和垂直的最佳点，组合起来就是最佳的见面地点。
+一维上的最佳地点，是坐标的中位数。先把坐标list排序，当有奇数个时中位数为index = n/2的那个，
+当偶数个时，理论上中位数应该是index = n/2和 n/2 + 1的那两个数的平均值，但是对于这道题，这两个数之间的任何数作为中位数
+都不影响各个点到这个点的差的绝对值的和，所以选n/2作为中位数也可以。
+
+public class Solution {
+    /**
+     * @param grid: a 2D grid
+     * @return: the minimize travel distance
+     */
+    public int minTotalDistance(int[][] grid) {
+        // Write your code here
+        // 把grid里值为1的点的横纵坐标分别存储进两个ArrayList
+        List<Integer> xs = new ArrayList<>();
+        List<Integer> ys = new ArrayList<>();
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (grid[i][j] == 1) {
+                    xs.add(j);
+                    ys.add(i);
+                }
+            }
+        }
+        return getDistToMid(xs) + getDistToMid(ys);
+    }
+    
+    // 求数组每个点到中位数的距离
+    private int getDistToMid(List<Integer> list) {
+        Collections.sort(list);
+        int n = list.size();
+        int mid = list.get(n/2);
+        int dist = 0;
+        for (int i = 0; i < n; i++) {
+            dist += Math.abs(mid - list.get(i));
+        }
+        return dist;
+    }    
+}
