@@ -61,6 +61,7 @@ public class Solution {
             res[0] = res[1] = 0;
             return res;
         }
+        
         Pair[] sums = new Pair[len+1];
         int prev = 0;
         sums[0] = new Pair(0, 0);
