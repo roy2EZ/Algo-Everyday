@@ -1,0 +1,30 @@
+619. Binary Tree Longest Consecutive Sequence III 二叉树的最长连续子序列III
+
+这题是 二叉树的最长连续子序列II 的后续。
+给出一棵 k叉树，找到最长连续序列路径的长度.
+路径的开头跟结尾可以是树的任意节点。
+It's follow up problem for Binary Tree Longest Consecutive Sequence II
+Given a k-ary tree, find the length of the longest consecutive sequence path.
+The path could be start and end at any node in the tree
+
+样例
+Example 1:
+
+Input:
+5<6<7<>,5<>,8<>>,4<3<>,5<>,31<>>>
+Output:
+5
+Explanation:
+     5
+   /   \
+  6     4
+ /|\   /|\
+7 5 8 3 5 3
+
+return 5, // 3-4-5-6-7
+Example 2:
+
+Input:
+1<>
+Output:
+1
