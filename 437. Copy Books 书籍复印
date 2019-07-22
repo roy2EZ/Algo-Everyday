@@ -40,4 +40,57 @@ O(nk) time
 
 题目中主要的限制就是 （1）只有k个人（2）时间最小，这里我们对时间进行二分，然后用k这个限制条件来进行检查。
 
-
+public class Solution {
+    /**
+     * @param pages: an array of integers
+     * @param k: An integer
+     * @return: an integer
+     */
+    public int copyBooks(int[] pages, int k) {
+        // write your code here
+        
+        if (pages.length == 0) {
+            return 0;
+        }
+        
+        int left = 0, right = Integer.MAX_VALUE;
+        while (left + 1 < right) {
+            int mid = left + (right-left)/2;
+            // 如果mid这个时间是可行的，
+            if (check(pages, k, mid)) {
+                right = mid; //那么right移动到mid来缩小范围，mid要包含进去
+            } else {
+                left = mid + 1; // 如果mid不可行，就要扩大
+            }
+        }
+        
+        if (check(pages, k, left)){
+            return left;
+        } else {
+            return right;
+        }
+            
+    }
+    
+    public boolean check(int[] pages, int k, int time) {
+        int person = 1;
+        int sumTime = 0;
+        for (int i = 0; i < pages.length; i++) {
+            if (sumTime + pages[i] > time) { // 如果现在这个人抄第i本书会超过要检查的time
+                if (pages[i] > time) {return false;} // 如果这本书下一个人也抄不完就return false
+                sumTime = pages[i]; //更新抄写人的时间和
+                person++; // 那就让下一个人抄书
+            } else {
+                sumTime += pages[i]; // 如果当前这个人还能抄，就让他抄，把这个的时间加到他的sum时间
+            }
+        }
+        
+        if (person > k) { // 如果抄完了之后发现用的人比k多，return false
+            return false;
+        } else {
+            return true;
+        }
+        
+    }
+    
+}
