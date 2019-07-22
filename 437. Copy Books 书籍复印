@@ -1,0 +1,43 @@
+437. Copy Books 书籍复印
+
+给定 n 本书, 第 i 本书的页数为 pages[i]. 现在有 k 个人来复印这些书籍, 而每个人只能复印编号连续的一段的书, 
+比如一个人可以复印 pages[0], pages[1], pages[2], 但是不可以只复印 pages[0], pages[2], pages[3] 而不复印 pages[1].
+所有人复印的速度是一样的, 复印一页需要花费一分钟, 并且所有人同时开始复印. 怎样分配这 k 个人的任务, 使得这 n 本书能够被尽快复印完?
+返回完成复印任务最少需要的分钟数.
+
+Given n books and the i-th book has pages[i] pages. There are k persons to copy these books.
+
+These books list in a row and each person can claim a continous range of books. 
+For example, one copier can copy the books from i-th to j-th continously, but he can not copy the 1st book, 
+2nd book and 4th book (without 3rd book).
+They start copying books at the same time and they all cost 1 minute to copy 1 page of a book. 
+What's the best strategy to assign books so that the slowest copier can finish at earliest time?
+Return the shortest time that the slowest copier spends.
+
+样例
+Example 1:
+
+Input: pages = [3, 2, 4], k = 2
+Output: 5
+Explanation: 
+    First person spends 5 minutes to copy book 1 and book 2.
+    Second person spends 4 minutes to copy book 3.
+Example 2:
+
+Input: pages = [3, 2, 4], k = 3
+Output: 4
+Explanation: Each person copies one of the books.
+挑战
+O(nk) time
+
+解题思路：二分答案。
+题目就是把这n个数字划分成k段，使得k段当中那个段的sum最大时间最小。
+二分答案的思路就是，我先猜一下，比如这个最大的时间t = 100分钟，
+那么第一个人就开始抄，抄到100分钟之后第二个人开始抄，依次下去，如果最终k个人都用了，
+但还没抄完，那就说明100分钟这个值是不够的。如果k个人抄完了，说明100分钟是够用的，
+那么就尝试50分钟。对这个数字进行二分查找，这就是二分答案。一般问一个最大的东西的最小，就是用这种二分答案的方法。
+那么解答的程序就要有两部分，一部分是对这个时间的二分，一个是检查这个时间行不行。
+
+题目中主要的限制就是 （1）只有k个人（2）时间最小，这里我们对时间进行二分，然后用k这个限制条件来进行检查。
+
+
