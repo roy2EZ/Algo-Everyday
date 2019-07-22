@@ -1,0 +1,98 @@
+633. Find the Duplicate Number 寻找重复的数
+
+给出一个数组 nums 包含 n + 1 个整数，每个整数是从 1 到 n (包括边界)，保证至少存在一个重复的整数。假设只有一个重复的整数，找出这个重复的数。
+Given an array nums containing n + 1 integers where each integer is between 1 and n (inclusive), gaurentee that at least one duplicate number must exist. Assume that there is only one duplicate number, find the duplicate one.
+
+样例
+Example 1:
+
+Input:
+[5,5,4,3,2,1]
+Output:
+5
+Example 2:
+
+Input:
+[5,4,4,3,2,1]
+Output:
+4
+注意事项
+You must not modify the array (assume the array is read only).
+You must use only constant, O(1) extra space.
+Your runtime complexity should be less than O(n^2).
+There is only one duplicate number in the array, but it could be repeated more than once.
+
+解法一：复杂度O(nlogn)， 二分答案，去查数列里有多少个数小于等于mid，如果这个数字比查<=mid，就说明重复发生在了比mid大的数字里，left=mid
+反之right=mid。需要一个复杂度O(n)的helper function去数，调用了这个helper function logn次，所以总的复杂度O(nlogn)
+public class Solution {
+    /**
+     * @param nums an array containing n + 1 integers which is between 1 and n
+     * @return the duplicate one
+     */
+    public int findDuplicate(int[] nums) {
+        // Write your code here
+        int left = 1;
+        int right = nums.length - 1;  // n
+        
+        while (left + 1 < right) {
+            int mid = left + (right - left) / 2;
+            if (count(nums, mid) <= mid) {
+                left = mid;
+            } else {
+                right = mid;
+            }
+        }
+        
+        if (count(nums, left) <= left) {
+            return right;
+        }
+        return left;
+    }
+    
+    private int count(int[] nums, int mid) {
+        int cnt = 0;
+        for (int item : nums) {
+            if (item <= mid) {
+                cnt++;
+            }
+        }
+        return cnt;
+    }
+}
+
+
+
+解法二：复杂度O(n)的奇技淫巧。当前的数字是多少，就访问以这个数字为index的下一个数字，访问过就把这个数字改为-1，这些发生在while循环里，跳出来的条件是第一次遇到-1，
+就说明这个数字已经访问过，当前的index就是那个重复的数字。
+比如 [5,1,4,5,3,2]
+index i 初始化为0， A[0] = 5,访问过了，把这个5复制下来 temp=5, 然后就标记这个数字为-1，数列就变成[-1,1,4,5,3,2]
+i = temp = 5, 于是访问A[5] = 2, 同样 temp = 2, A = [-1,1,4,5,3,-1]
+i = 2, A[2] = 4, temp = 4, A = [-1,1,-1,5,3,-1]
+i = 4, A[4] = 3, temp = 3, A = [-1,1,-1,5,-1,-1]
+i = 3, A[3] = 5, temp = 5, A = [-1,1,-1,-1,-1,-1]
+i = 5, A[5] = -1 这个数字就是那个重复的，也就是说已经拜访过A[5]并且把它改成-1了，这将是第一次我们遇到一个拜访的时候值是-1的,就找到了这个重复的数字
+这时返回i的值就是那个重复的数字，5.
+
+
+
+public class Solution {
+    /**
+     * @param nums an array containing n + 1 integers which is between 1 and n
+     * @return the duplicate one
+     */
+    public int findDuplicate(int[] nums) {
+        //mark visited number as -1.
+        int i=0;
+        while (nums[i] >=0) {
+            int temp = nums[i];
+            nums[i] = -1;
+            i = temp;
+        }
+        return i;
+    }
+    
+}
+
+
+
+
