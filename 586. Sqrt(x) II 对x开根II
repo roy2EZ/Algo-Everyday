@@ -1,0 +1,45 @@
+586. Sqrt(x) II 对x开根II
+
+实现 double sqrt(double x) 并且 x >= 0。
+计算并返回x开根后的值。Implement double sqrt(double x) and x >= 0.
+
+Compute and return the square root of x.
+
+样例
+Example 1:
+
+Input: n = 2 
+Output: 1.41421356
+Example 2:
+
+Input: n = 3
+Output: 1.73205081
+注意事项
+You do not care about the accuracy of the result, we will help you to output results.
+
+解题思路：二分答案，如果mid平方之后比x小，那么mid就需要更大让left=mid,否则right=mid缩小范围。
+注意right的初始，如果x比1大，那么right就从x开始，如果x比1小，那么说明开根号之后会小于1，right就从1开始，
+写作right = Math.max(1, x);
+
+public class Solution {
+    /**
+     * @param x: a double
+     * @return: the square root of x
+     */
+    public double sqrt(double x) {
+        // write your code here
+        double EPS= 1e-10; //答案的精度 10^-10
+        double left = 0, right = Math.max(1, x); // 注意此处right的初始
+        
+        while (left + EPS < right) { // 此处的left+1<right变成了加精度
+            double mid = left + (right - left) / 2;
+            if (mid*mid < x) {
+                left = mid;
+            } else {
+                right = mid;
+            }
+        }
+        
+        return left;
+    }
+}
