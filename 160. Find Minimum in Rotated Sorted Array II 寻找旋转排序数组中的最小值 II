@@ -1,0 +1,48 @@
+160. Find Minimum in Rotated Sorted Array II 寻找旋转排序数组中的最小值 II
+
+假设一个旋转排序的数组其起始位置是未知的（比如0 1 2 4 5 6 7 可能变成是4 5 6 7 0 1 2）。
+你需要找到其中最小的元素。
+Suppose a sorted array is rotated at some pivot unknown to you beforehand.
+(i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).
+Find the minimum element.
+
+样例
+Example 1:
+
+Input :[2,1]
+Output : 1.
+Example 2:
+
+Input :[4,4,5,6,7,0,1,2]
+Output : 0.
+
+注意事项：注意有重复的数字
+
+解题思路：二分法
+public class Solution {
+    /**
+     * @param num: a rotated sorted array
+     * @return: the minimum number in the array
+     */
+    public int findMin(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return -1;
+        }
+        
+        int left = 0, right = nums.length - 1;
+        while (left + 1 < right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] == nums[right]) {
+                // if mid equals to end, that means it's fine to remove end
+                // the smallest element won't be removed
+                right--;
+            } else if (nums[mid] < nums[right]) {
+                right = mid; // of course you can merge == & <
+            } else {
+                left = mid; // or left = mid + 1
+            }
+        }
+        
+        return Math.min(nums[left], nums[right]);
+    }
+}
