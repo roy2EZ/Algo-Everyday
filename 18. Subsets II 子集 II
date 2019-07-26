@@ -1,0 +1,69 @@
+18. Subsets II 子集 II
+
+给定一个可能具有重复数字的列表，返回其所有可能的子集。
+Given a collection of integers that might contain duplicates, nums, return all possible subsets (the power set).
+
+样例
+Example 1:
+
+Input: [0]
+Output:
+[
+  [],
+  [0]
+]
+Example 2:
+
+Input: [1,2,2]
+Output:
+[
+  [2],
+  [1],
+  [1,2,2],
+  [2,2],
+  [1,2],
+  []
+]
+挑战
+Can you do it in both recursively and iteratively?
+
+注意事项
+Each element in a subset must be in non-descending order.
+The ordering between two subsets is free.
+The solution set must not contain duplicate subsets.
+
+解题思路：DFS。注意处理重复的数字
+
+public class Solution {
+    /**
+     * @param nums: A set of numbers.
+     * @return: A list of lists. All valid subsets.
+     */
+     
+    private List<List<Integer>> answer = new ArrayList<>();
+    private Stack<Integer> stack = new Stack<>();
+    
+    private void dfs(int[] nums, int start){
+        answer.add(new ArrayList<>(stack));
+        
+        if(start >= nums.length){
+            return;
+        }
+        
+        for (int i = start; i<nums.length;i++){
+            if(i==start || nums[i]!=nums[i-1]){
+                stack.push(nums[i]);
+                dfs(nums,i+1);
+                stack.pop();
+            }
+        }
+    }
+    
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        // write your code here
+        Arrays.sort(nums);
+        dfs(nums,0);
+        return answer;
+        
+    }
+}
