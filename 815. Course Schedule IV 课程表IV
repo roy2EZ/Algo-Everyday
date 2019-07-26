@@ -1,0 +1,84 @@
+815. Course Schedule IV 课程表IV
+
+总共有n个课程，从0到n-1。有些课程可能有先决条件，例如，你想修课程0，你必须先修一门课程1，这两门课之间的关系表示为:[0,1]
+考虑到课程的总数和先决条件对的列表，返回你可以得到所有课程的不同方法的数量。
+Given a set of words without duplicates, find all word squares you can build from them.
+A sequence of words forms a valid word square if the kth row and column read the exact same string, 
+where 0 ≤ k < max(numRows, numColumns). For example, the word sequence ["ball","area","lead","lady"] forms a word 
+square because each word reads the same both horizontally and vertically.
+
+样例
+样例1
+
+输入:
+n = 2
+prerequisites = [[1,0]]
+输出: 1
+说明:
+你必须按照0->1的顺序上课。
+样例2
+
+输入:
+n = 2
+prerequisites = []
+Output: 2
+输出:
+你可以按0->1或1->0的顺序上课。
+
+
+解题思路：拓扑排序DFS
+
+public class Solution {
+    /**
+     * @param n: an integer, denote the number of courses
+     * @param p: a list of prerequisite pairs
+     * @return: return an integer,denote the number of topologicalsort
+     */
+     
+    // 用adj list建立图
+    private List<Integer>[] graph;
+    //入度
+    private int[] inCount;
+    private int answer = 0;
+    
+    private void dfs(int counter){
+        if(counter==inCount.length){
+            answer++;
+            return;
+        }
+        for (int i = 0; i < inCount.length;i++){
+            if(inCount[i] == 0) { //如果当前点入度为0
+                for(int j = 0;j<graph[i].size();j++) {
+                    inCount[graph[i].get(j)]--;
+                }
+                inCount[i]= -1; // 用inCount -1表示visited
+                dfs(counter+1);
+                inCount[i]=0;
+                for(int j = 0;j<graph[i].size();j++){
+                    inCount[graph[i].get(j)]++;
+                }
+            } 
+        }
+    }
+    
+    
+    
+    public int topologicalSortNumber(int n, int[][] p) {
+        // Write your code here
+        
+        // 建立图
+        graph = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        inCount = new int[n];
+        for (int i = 0; i < p.length;i++){
+            inCount[p[i][0]]++;
+            graph[p[i][1]].add(p[i][0]);
+        }
+        
+        dfs(0);
+        return answer;
+        
+    }
+}
