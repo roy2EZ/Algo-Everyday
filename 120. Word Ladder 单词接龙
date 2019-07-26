@@ -1,0 +1,105 @@
+120. Word Ladder 单词接龙
+给出两个单词（start和end）和一个字典，找出从start到end的最短转换序列，输出最短序列的长度。
+变换规则如下：
+Given two words (start and end), and a dictionary, find the shortest transformation sequence from start to end, output the length of the sequence.
+Transformation rule such that:
+
+每次只能改变一个字母。
+变换过程中的中间单词必须在字典中出现。(起始单词和结束单词不需要出现在字典中)
+Only one letter can be changed at a time
+Each intermediate word must exist in the dictionary. (Start and end words do not need to appear in the dictionary )
+
+如果不存在这样的转换序列，返回 0。
+所有单词具有相同的长度。
+所有单词只由小写字母组成。
+字典中不存在重复的单词。
+你可以假设 beginWord 和 endWord 是非空的，且二者不相同。
+Return 0 if there is no such transformation sequence.
+All words have the same length.
+All words contain only lowercase alphabetic characters.
+You may assume no duplicates in the word list.
+You may assume beginWord and endWord are non-empty and are not the same.
+
+样例
+样例 1:
+
+输入：start = "a"，end = "c"，dict =["a","b","c"]
+输出：2
+解释：
+"a"->"c"
+样例 2:
+
+输入：start ="hit"，end = "cog"，dict =["hot","dot","dog","lot","log"]
+输出：5
+解释：
+"hit"->"hot"->"dot"->"dog"->"cog"
+注意事项
+如果不存在这样的转换序列，返回 0。
+所有单词具有相同的长度。
+所有单词只由小写字母组成。
+字典中不存在重复的单词。
+你可以假设 beginWord 和 endWord 是非空的，且二者不相同。
+
+解题思路：BFS
+
+public class Solution {
+    /*
+     * @param start: a string
+     * @param end: a string
+     * @param dict: a set of string
+     * @return: An integer
+     */
+    public int ladderLength(String start, String end, Set<String> dict) {
+        // write your code here
+        dict.add(start);
+        dict.add(end);
+        
+        HashSet<String> visited = new HashSet<>();
+        Queue<String> q = new LinkedList<>();
+        HashMap<String, Integer> dist = new HashMap<>();
+        
+        visited.add(start);
+        q.offer(start);
+        dist.put(start,1);
+        
+        while(!q.isEmpty()) {
+            String u = q.poll();
+            if (u.equals(end)) return dist.get(u);
+            for (String v : getNeighbors(u, dict)) {
+                if (!visited.contains(v) && dict.contains(v)) {
+                    visited.add(v);
+                    q.offer(v);
+                    dist.put(v,dist.get(u)+1);
+                }
+            }
+        }
+        return 0;
+    }
+    
+    // get connections with given word.
+    // for example, given word = 'hot', dict = {'hot', 'hit', 'hog'}
+    // it will return ['hit', 'hog']    
+    private ArrayList<String> getNeighbors(String word, Set<String> dict) {
+        ArrayList<String> neighbors = new ArrayList<>();
+        for (char c = 'a'; c <='z'; c++) {    // 枚举替换字母
+            for (int i = 0; i< word.length();i++) {  // 枚举替换的位置
+                if (c == word.charAt(i)) {
+                    continue;
+                }
+                String neighbor = replace(word, i, c);
+                if(dict.contains(neighbor)) {
+                    neighbors.add(neighbor);
+                }
+            }
+            
+        }
+        return neighbors;
+    }
+    
+    private String replace(String str, int index, char c) {
+        char[] chars = str.toCharArray();
+        chars[index] = c;
+        return new String(chars);
+    }
+}
+
