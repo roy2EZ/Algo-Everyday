@@ -1,0 +1,184 @@
+796. Open the Lock 开锁
+你面前有一个有四个圆形轮子的锁。每个轮子有10个槽:‘0’,‘1’,‘2’,‘3’,‘4’,‘5’,‘6’,‘7’,‘8’,‘9’。轮子可以自由旋转并环绕:
+例如，我们可以把‘9’变成‘0’，或者‘0’变成‘9’。每个动作包括转动一个轮子一个槽。
+锁最初是‘0000’开始的，这是一个表示四个轮子状态的字符串。
+你被给了一个死锁的列表，意思是如果锁显示了这些代码中的任何一个，锁的轮子将停止转动，你将无法打开它。
+给定一个表示将解锁锁的轮子的值的目标，返回打开锁所需要的最小总次数，如果不可能，则返回-1。
+You have a lock in front of you with 4 circular wheels. Each wheel has 10 slots: '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'. 
+The wheels can rotate freely and wrap around: for example we can turn '9' to be '0', or '0' to be '9'. 
+Each move consists of turning one wheel one slot.
+The lock initially starts at '0000', a string representing the state of the 4 wheels.
+
+You are given a list of deadends dead ends, meaning if the lock displays any of these codes, the wheels of the lock will stop turning and you will be unable to open it.
+
+Given a target representing the value of the wheels that will unlock the lock, return the minimum total number of turns required to open the lock, or -1 if it is impossible.
+
+样例
+Example 1:
+
+Given deadends = ["0201","0101","0102","1212","2002"], target = "0202"
+Return 6
+
+Explanation:
+A sequence of valid moves would be "0000" -> "1000" -> "1100" -> "1200" -> "1201" -> "1202" -> "0202".
+Note that a sequence like "0000" -> "0001" -> "0002" -> "0102" -> "0202" would be invalid,
+because the wheels of the lock become stuck after the display becomes the dead end "0102".
+Example 2:
+
+Given deadends = ["8888"], target = "0009"
+Return 1
+
+Explanation:
+We can turn the last wheel in reverse to move from "0000" -> "0009".
+注意事项
+1.The length of deadends will be in the range [1, 500].
+2.target will not be in the list deadends.
+3.Every string in deadends and the string target will be a string of 4 digits from the 10,000 possibilities '0000' to '9999'.
+
+
+解法1：单向 BFS
+public class Solution {
+    /**
+     * @param deadends: the list of deadends
+     * @param target: the value of the wheels that will unlock the lock
+     * @return: the minimum total number of turns 
+     */
+    public int openLock(String[] deadends, String target) {
+        // Write your code here
+        Queue<String> queue = new LinkedList<>();
+        HashSet<String> visited = new HashSet<>();
+        HashMap<String, Integer> dist = new HashMap<>();
+        if (isDead("0000", deadends)) return -1;
+        queue.offer("0000");
+        visited.add("0000");
+        dist.put("0000",0);
+        
+        while(!queue.isEmpty()){
+            String cur = queue.poll();
+            for(String next: getNext(cur)){
+                if(visited.contains(next)) continue;
+                if(isDead(next,deadends)) continue;
+                queue.offer(next);
+                visited.add(next);
+                dist.put(next, dist.get(cur) + 1);
+                if(next.equals(target)) {
+                    return dist.get(target);
+                }
+            }
+        }
+        return -1;
+    }
+    
+    
+    
+    public boolean isDead(String cur, String[] deadends){
+        for(int i=0;i<deadends.length;i++){
+            if(cur.equals(deadends[i])) return true;
+        }
+        return false;
+    }
+    
+    
+    public Set<String> getNext(String cur){
+        HashSet<String> result = new HashSet<>();
+        
+        for(int i = 0; i<4;i++){
+            int digit = cur.charAt(i) - '0';
+            String up = cur.substring(0,i)+ (char)((digit+1)%10+'0') + cur.substring(i+1,4);
+            String down = cur.substring(0,i)+ (char)((digit-1 + 10)%10+'0') + cur.substring(i+1,4);
+            
+            result.add(up);
+            result.add(down);
+        }
+        
+        return result;
+    }
+}
+
+解法2：改进， 双向BFS
+public class Solution {
+    /**
+     * @param deadends: the list of deadends
+     * @param target: the value of the wheels that will unlock the lock
+     * @return: the minimum total number of turns 
+     */
+    public int openLock(String[] deadends, String target) {
+        // Write your code here
+        Queue<String> queueStart = new LinkedList<>();
+        Queue<String> queueEnd = new LinkedList<>();
+        HashSet<String> visitedStart = new HashSet<>();
+        HashSet<String> visitedEnd = new HashSet<>();
+        HashMap<String, Integer> distStart = new HashMap<>();
+        HashMap<String, Integer> distEnd = new HashMap<>();
+        
+        if (isDead("0000", deadends)) return -1;
+        
+        queueStart.offer("0000");
+        visitedStart.add("0000");
+        distStart.put("0000",0);
+        
+        queueEnd.offer(target);
+        visitedEnd.add(target);
+        distEnd.put(target,0);
+        
+        
+        
+        while(!queueStart.isEmpty()||!queueEnd.isEmpty()){
+            
+            if(!queueStart.isEmpty()){
+                String cur = queueStart.poll();
+                for(String next: getNext(cur)){
+                    if(visitedStart.contains(next)) continue;
+                    if(isDead(next,deadends)) continue;
+                    queueStart.offer(next);
+                    visitedStart.add(next);
+                    distStart.put(next, distStart.get(cur) + 1);
+                    if(visitedEnd.contains(next)){
+                        return distStart.get(next)+distEnd.get(next);
+                    }
+                }
+            }
+            if(!queueEnd.isEmpty()){
+                String cur = queueEnd.poll();
+                for(String next: getNext(cur)){
+                    if(visitedEnd.contains(next)) continue;
+                    if(isDead(next,deadends)) continue;
+                    queueEnd.offer(next);
+                    visitedEnd.add(next);
+                    distEnd.put(next, distEnd.get(cur) + 1);
+
+                    if(visitedStart.contains(next)){
+                        return distStart.get(next)+distEnd.get(next);
+                    }
+                }
+            }
+            
+        }
+        return -1;
+    }
+    
+    
+    
+    public boolean isDead(String cur, String[] deadends){
+        for(int i=0;i<deadends.length;i++){
+            if(cur.equals(deadends[i])) return true;
+        }
+        return false;
+    }
+    
+    
+    public Set<String> getNext(String cur){
+        HashSet<String> result = new HashSet<>();
+        
+        for(int i = 0; i<4;i++){
+            int digit = cur.charAt(i) - '0';
+            String up = cur.substring(0,i)+ (char)((digit+1)%10+'0') + cur.substring(i+1,4);
+            String down = cur.substring(0,i)+ (char)((digit-1 + 10)%10+'0') + cur.substring(i+1,4);
+            
+            result.add(up);
+            result.add(down);
+        }
+        
+        return result;
+    }
+}
