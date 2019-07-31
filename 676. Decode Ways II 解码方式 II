@@ -1,0 +1,89 @@
+676. Decode Ways II 解码方式 II
+
+使用以下映射方式将 A-Z 的消息编码为数字:
+'A' -> 1
+'B' -> 2
+...
+'Z' -> 26
+除此之外, 编码的字符串也可以包含字符 *, 它代表了 1 到 9 的数字中的其中一个.
+给出包含数字和字符 * 的编码消息, 返回所有解码方式的数量. 因为结果可能很大, 所以结果需要对 10^9 + 7 取模
+A message containing letters from A-Z is being encoded to numbers using the following mapping way:
+
+'A' -> 1
+'B' -> 2
+...
+'Z' -> 26
+Beyond that, now the encoded string can also contain the character *, which can be treated as one of the numbers from 1 to 9.
+Given the encoded message containing digits and the character *, return the total number of ways to decode it.
+Also, since the answer may be very large, you should return the output mod 10^9 + 7.
+
+样例
+Example 1
+
+Input: "*"
+Output: 9
+Explanation: You can change it to "A", "B", "C", "D", "E", "F", "G", "H", "I".
+Example 2
+
+Input: "1*"
+Output: 18
+注意事项
+The length of the input string will fit in range [1, 10^5].
+The input string will only contain the character * and digits 0 - 9.
+
+解题思路：动态规划， dp[i]: s的前i个字符 – s[0, …, i-1] decode ways 分情况讨论
+
+public class Solution {
+    /**
+     * @param s: a message being encoded
+     * @return: an integer
+     */
+    public int numDecodings(String s) {
+        // write your code here
+        if (s == null || s.length()==0){
+            return 0;
+            
+        }
+    
+        int mod = (int)1e9 + 7;
+        int n= s.length();
+        long[] dp = new long[n+1];
+        dp[0] = 1;
+    
+        // dp[1] = ...
+        for(int i=0;i<n;i++){
+            // if '*'
+            if(s.charAt(i) == '*'){
+                dp[i+1]=(9*dp[i])%mod;
+                if(i>=1){
+                    if(s.charAt(i-1)=='*'){
+                        dp[i+1] = (dp[i+1]+15*dp[i-1])%mod; // 11 to 19, 21 to 16
+                    } else if (s.charAt(i-1)=='1'){
+                        dp[i+1] = (dp[i+1]+ 9*dp[i-1])%mod; // 11 to 19
+                    } else if (s.charAt(i-1)=='2'){
+                        dp[i+1] = (dp[i+1]+ 6*dp[i-1])%mod; // 21 to 26
+                    }
+                }
+            } else {
+                if(s.charAt(i) != '0') {
+                    dp[i+1] = dp[i];
+                }
+                if(i>=1){
+                    if(s.charAt(i-1)=='*'){
+                        if(s.charAt(i) <= '6') {
+                            dp[i+1] = (dp[i+1] + 2*dp[i-1]) % mod; // 2几
+                        } else {
+                            dp[i+1] = (dp[i+1] + dp[i-1]) % mod; // 1几
+                        }
+                    } else{
+                        int twoDigits = (s.charAt(i-1)-'0')*10 + (s.charAt(i)-'0');
+                        if(twoDigits >= 10 && twoDigits <= 26){
+                            dp[i+1] = (dp[i+1] + dp[i-1]) % mod;
+                        }
+                    }
+                }
+            }
+        }
+        return (int)dp[n];
+    }
+}
