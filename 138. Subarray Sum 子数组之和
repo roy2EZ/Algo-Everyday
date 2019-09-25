@@ -1,0 +1,63 @@
+138. Subarray Sum 子数组之和
+
+给定一个整数数组，找到和为零的子数组。你的代码应该返回满足要求的子数组的起始位置和结束位置
+Given an integer array, find a subarray where the sum of numbers is zero. Your code should return the index of the first number and the index of the last number.
+
+样例
+Example 1:
+
+Input:  [-3, 1, 2, -3, 4]
+Output: [0, 2] or [1, 3].
+Explanation: return anyone that the sum is 0.
+Example 2:
+
+Input:  [-3, 1, -4, 2, -3, 4]
+Output: [1,5]	
+注意事项
+There is at least one subarray that it's sum equals to zero.
+
+
+
+解题思路：     
+利用前缀和数组
+Sum[i ~ j] = prefixSum[j] - prefixSum[i-1] = 0
+则prefixSum[j+1] = prefixSum[i]
+用hashmap去存prefixSum,然后去找是否有相等
+
+public class Solution {
+    /**
+     * @param nums: A list of integers
+     * @return: A list of integers includes the index of the first number and the index of the last number
+     */
+    public List<Integer> subarraySum(int[] nums) {
+        // write your code here
+        
+
+        
+        ArrayList<Integer> result = new ArrayList<>(); // 结果是包含两个坐标的arraylist
+        
+        HashMap<Integer, Integer> mapPrefixSumToIndex = new HashMap<>();
+        
+        // prefixSum[i] = prefixSum[i-1] + nums[i]
+        // 初始化 prefixSum[-1] = 0 
+        mapPrefixSumToIndex.put(0, -1); 
+        
+        int prefixSum = 0; // 初始化prefixSum[0] = 0
+        
+        for (int i = 0; i < nums.length; i++) {
+            prefixSum += nums[i];
+            if(mapPrefixSumToIndex.containsKey(prefixSum)) { 
+                //如果prefixSum[i] 已经在map里，说明之前已经有相同的prefixSum[x],我们需要x和i-1这两个index作为答案[x+1, i];
+                result.add(mapPrefixSumToIndex.get(prefixSum) + 1);// index 为 x+1
+                result.add(i);
+                return result;
+            }
+            
+            //如果之前的prefixSum里不包含prefixSum[i],则把key value pair (prefixSum[i], i) 放入map
+            mapPrefixSumToIndex.put(prefixSum, i);
+        }
+        
+        return result; // 如果遍历之后最后都没找到则返回空答案
+
+    }
+}
