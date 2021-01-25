@@ -1,0 +1,82 @@
+35. Search Insert Position
+搜索插入位置
+题目
+​https://leetcode.com/problems/search-insert-position/​
+
+Given a sorted array of distinct integers and a target value, return the index if the target is found. If not, return the index where it would be if it were inserted in order.
+
+给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。你可以假设数组中无重复元素。
+
+Example 1:
+
+Input: nums = [1,3,5,6], target = 5 Output: 2 
+
+Example 2:
+
+Input: nums = [1,3,5,6], target = 2 Output: 1 
+
+Example 3:
+
+Input: nums = [1,3,5,6], target = 7 Output: 4 
+
+Example 4:
+
+Input: nums = [1,3,5,6], target = 0 Output: 0 
+
+Example 5:
+
+Input: nums = [1], target = 0 Output: 0
+
+Constraints:
+
+1 <= nums.length <= 104
+
+-104 <= nums[i] <= 104
+
+nums contains distinct values sorted in ascending order.
+
+-104 <= target <= 104
+
+分析
+这道题是需要找到firstposition >= target 的位置。
+
+Tip: while结束后，需要找firstposition的话先判断start，找lastposition的话先判断end。
+
+题解
+Java
+Python
+class Solution {
+    public int searchInsert(int[] nums, int target) {
+        if(nums.length <=0){
+            return -1;
+        }
+        int start = 0;
+        int end = nums.length -1;
+        while (start + 1 < end){
+            int mid = start +(end-start)/2;
+            //找到了
+            if(nums[mid] == target){
+                return mid;
+            } 
+            else if (nums[mid] < target){
+                start = mid;
+            } 
+            else {
+                end = mid;
+            }
+        }
+        //没找到target,在start和end中找比target大的
+        //start>=tartget
+        if(nums[start] >= target){
+            return start;
+        }
+        //end>=tartget
+        else if (nums[end] >= target){
+            return end;
+        }
+        //nums中所有元素都比target小
+        else{
+            return end+1;
+        }
+    }
+​
