@@ -1,0 +1,122 @@
+Classic Binary Search 经典二分法
+二分法是很多人刷题的第一个tag，因为它实用，常考，也是最经典的一种算法思维，又有比较好的模板可以让初学者快速上手
+题目
+Leetcode 704.Binary Search https://leetcode.com/problems/binary-search/description/​
+Definition 定义
+给定一个排序数组和一个元素target，返回元素target的位置index
+
+nums = [2,3,5,8,13,21,34,55,89] 
+Target = 5 
+expected result: return 2 
+Running Time 时间复杂度
+数据规模为n: 
+
+T(n) = T(n/2)+O(1) 
+
+其中O(1)为比较的时间复杂度，T(n/2)为比较之后 
+
+时间复杂度是:O(logn) 
+
+Implement 实现方式
+递归：
+
+优点：代码简洁
+
+缺点：递归利用栈空间，递归层数过多会导致栈溢出
+
+while循环
+
+优点：占用空间小
+
+缺点：代码可读性稍差，不够简洁
+
+​
+
+面试的时候用什么？
+如果用递归的方式写会好理解很多，就用递归写，不然就不用递归，在工程上，递归很容易导致栈溢出。
+
+这道题用最好用非递归的方式写，因为是很简短的
+
+Template 通用模板
+// Java
+class Solution {
+    public int search(int[] nums, int target) {
+        if (nums == null || nums.length == 0) {
+            return -1;
+        }
+        
+        int start = 0, end = nums.length - 1;
+        // 要点1: start + 1 < end
+        while (start + 1 < end) {
+        // 要点2：start + (end - start) / 2
+            int mid = start + (end - start) / 2;
+            // 要点3：=, <, > 分开讨论，mid 不+1也不-1
+            if (nums[mid] == target) {
+                return mid;
+            } else if (nums[mid] < target) {
+                start = mid;
+            } else {
+                end = mid;
+            }
+        }
+        
+        // 要点4: 循环结束
+        // 单独处理nums[start]和nums[end]
+        if (nums[start] == target) {
+            return start;
+        }
+        if (nums[end] == target) {
+            return end;
+        }
+        return -1;
+    }
+}
+# python
+class Solution(object):
+    def search(self, nums, target):
+        """
+        :type nums: List[int]
+        :type target: int
+        :rtype: int
+        """
+        if len(nums) == 0 or nums == None:
+            return -1
+        
+        start, end = 0, len(nums) - 1
+        # 要点1: start + 1 < end
+        while start + 1 < end:
+            # 要点2：start + (end - start) // 2
+            mid = start + (end - start) // 2
+            # 要点3：=, <, > 分开讨论，mid 不+1也不-1
+            if nums[mid] == target:
+                return mid
+            elif nums[mid] < target:
+                start = mid
+            else:
+                end = mid
+        # 要点4: 循环结束后，单独处理nums[start]和nums[end]
+        if target == nums[end]:
+            return end
+        elif target == nums[start]:
+            return start
+        else:
+            return -1
+Recursion 不推荐
+
+# Python3
+class Solution:
+    def search(self, nums: List[int], target: int) -> int:
+        
+        def binary_search(lst, start, end, target):
+            if start <= end:
+                mid = (start + end) // 2
+                if target == lst[mid]:
+                    return mid
+                elif target > lst[mid]:
+                    return binary_search(lst, mid + 1, end, target)
+                else:
+                    return binary_search(lst, start, mid - 1, target)
+            else:
+                return -1
+        
+    return binary_search(nums, 0, len(nums)-1, target)
