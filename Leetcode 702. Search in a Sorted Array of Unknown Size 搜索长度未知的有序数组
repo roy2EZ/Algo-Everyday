@@ -1,0 +1,104 @@
+702. Search in a Sorted Array of Unknown Size
+搜索长度未知的有序数组
+题目
+​https://leetcode.com/problems/search-in-a-sorted-array-of-unknown-size/​
+
+Given an integer array sorted in ascending order, write a function to search target in nums.  If target exists, then return its index, otherwise return -1. However, the array size is unknown to you. You may only access the array using an ArrayReader interface, where ArrayReader.get(k) returns the element of the array at index k (0-indexed).
+
+You may assume all integers in the array are less than 10000, and if you access the array out of bounds, ArrayReader.get will return 2147483647. 
+
+Example 1:
+​
+Input: array = [-1,0,3,5,9,12], target = 9
+Output: 4
+Explanation: 9 exists in nums and its index is 4
+​
+Example 2:
+​
+Input: array = [-1,0,3,5,9,12], target = 2
+Output: -1
+Explanation: 2 does not exist in nums so return -1
+Constraints:
+
+You may assume that all elements in the array are unique.
+
+The value of each element in the array will be in the range [-9999, 9999].
+
+The length of the array will be in the range [1, 10^4].
+
+分析
+这个题数组的长度不知道，没法直接对整个数组进行二分法。
+
+需要把题目分解成两个小题目：
+
+Define search limits, i.e. left and right boundaries for the search.
+
+对未来要进行的二分法，先确定在什么区间进行。
+
+这是关键的一步。办法很简单，我们就不断地扩张二分法的搜索区间范围。
+首先初始化 两个index指针 left 和 right，分别为 0 和 1，得到这两个位置上的值ArrayReader.get(left)和 ArrayReader.get(right)。如果target不在这两个值之间，说明这段范围内没有target，target在更右边的区间。下一次区间，我们让left = right, 然后right = right * 2 ，这样binary search的范围就会增加二倍。
+
+然后继续做一样的比较，直到发现target >= ArrayReader.get(right)，这时我们就确定了要做Binary Search的index范围，就是在那个时候的left到right之间。  
+
+
+Perform binary search in the defined boundaries.
+然后在找到的区间里做正常的二分法。
+
+
+
+开始寻找Binary Search的范围
+
+直到找到target >= ArrayReader.get(right)，然后在这个区间做正常的二分法 
+题解
+Java
+/**
+ * // This is ArrayReader's API interface.
+ * // You should not implement it, or speculate about its implementation
+ * interface ArrayReader {
+ *     public int get(int index) {}
+ * }
+ */
+​
+class Solution {
+    public int search(ArrayReader reader, int target) {
+        // corner case
+        if (reader.get(0) == target) return 0;
+        
+        // search boundaries
+        int start = 0, end = 1;
+        while (reader.get(end) < target) {
+            start = end;
+            end = end * 2;
+        }
+        
+        // binary search
+        while (start + 1 < end) {
+            int mid = start + (end - start) / 2;
+            if (reader.get(mid) == target){
+                return mid;
+            } else if (target > reader.get(mid)){
+                start = mid;
+            } else {
+                end = mid;
+            }
+        }
+        if (reader.get(start) == target) {
+            return start;
+        }
+        if (reader.get(end) == target) {
+            return end;
+        }
+        return -1;
+    }
+}
+时间复杂度
+Time complexity 
+分成两部分：
+
+Define Search Boundaries 每次扩大二倍的范围，对于整个数据量n来说，也是一直在“二分”，也就是 1 + 2 + 4 + 8 + 16 + ... = n1+2+4+8+16+...=n 
+那么一共也是进行了 O(logn)O(logn) 时间 (a logarithmic time complexity)
+
+然后正常的二分法也是O(logn)O(logn) 
+
+That means two subproblems, and both should be done in a logarithmic time.
+总的时间复杂度是O(logn) + O(logn) = O(2*logn) = O(logn)O(logn)+O(logn)=O(2∗logn)=O(logn) 
