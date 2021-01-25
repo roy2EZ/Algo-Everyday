@@ -1,3 +1,3 @@
-# Leetcode-Everyday
-Push myself to do algo questions on Leetcode using Java everyday. Good luck.
+# Algo-Everyday
+Push myself to do algo questions on Leetcode and Lintcode using Java/Python everyday. Good luck.
 
