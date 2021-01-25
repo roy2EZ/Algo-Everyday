@@ -1,0 +1,89 @@
+658. Find K Closest Elements
+找到 K 个最接近的元素
+题目
+​https://leetcode.com/problems/find-k-closest-elements/​
+
+Given a sorted integer array arr, two integers k and x, return the k closest integers to x in the array. The result should also be sorted in ascending order.
+给定一个排序好的数组 arr ，两个整数 k 和 x ，从数组中找到最靠近 x（两数之差最小）的 k 个数。返回的结果必须要是按升序排好的。
+
+An integer a is closer to x than an integer b if:
+整数 a 比整数 b 更接近 x 需要满足：
+
+|a - x| < |b - x|, or
+
+|a - x| == |b - x| and a < b
+
+Example 1:
+
+Input: arr = [1,2,3,4,5], k = 4, x = 3
+Output: [1,2,3,4]
+Example 2:
+
+Input: arr = [1,2,3,4,5], k = 4, x = -1
+Output: [1,2,3,4]
+Constraints:
+
+1 <= k <= arr.length
+
+1 <= arr.length <= 104
+
+Absolute value of elements in the array and x will not exceed 104
+
+分析
+二分法 + 滑动窗口
+参考：CSDN“算法马上来”的二分+滑动窗口C++代码思路​
+
+用我们的模板找到x可能的位置：
+
+如果 x 在 arr 里，那样我们的模板找到的[start, end]两个数必然包括了 x；
+
+或者 x 不在 arr 里的话，我们的模板也能找到最接近 x 左右的两个数
+
+然后我们可以扩大范围，最后答案的范围就在 [ start - k , end + k ] 这个区间里（用low，high指针表示，当然这个范围可能撞到最前面或者最后面，我们要确认好 low 和 high 的初始值）
+
+然后需要缩小这个窗口，按照如下滑动窗口方法：
+
+如果arr[low] 比 arr[high]更接近 x，即 x - arr[low] <= arr[high] - x， 那么 high--；
+
+否则就 low++
+
+loop跳出来的条件是[low, high]里面正好有 k 个元素时，即 high - low  + 1 = k （这个 + 1很重要，等差数列求项数： 项数 = （末项 — 首项）/ 公差 + 1），就得到了low到high之间这些数作为答案。
+
+题解
+Java
+class Solution {
+    public List<Integer> findClosestElements(int[] arr, int k, int x) {
+    
+        // 二分法模板 找到 x 可能在的位置
+        int start = 0;
+        int end = arr.length - 1;
+        while (start + 1 < end){
+            int mid = start + (end - start) / 2;
+            if (arr[mid] < x) {
+                start = mid;
+            } else {
+                end = mid;
+            }
+        }
+        // 扩大窗口范围从 low 到 high，用Math.max/min来处理撞到两边的情况
+        int low = Math.max(0, start - k);
+        int high = Math.min(arr.length-1, end + k);
+        
+        // Slide Window 滑动窗口缩小范围
+        while ( high - low + 1 > k ){
+            if ( x - arr[low] <= arr[high] - x) {
+                high--;
+            } else {
+                low++;
+            }
+        }
+        
+        // 输出答案
+        List<Integer> result = new ArrayList<>();
+        for (int i = low; i < low + k; i++){
+            result.add(arr[i]);
+        }
+        return result;
+        
+    }
+}
